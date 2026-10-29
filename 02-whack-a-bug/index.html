@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Whack-a-Bug</title>
+<style>
+ body{font-family:sans-serif;text-align:center;background:#0f172a;color:#fff}
+ #g{display:grid;grid-template-columns:repeat(3,110px);gap:12px;justify-content:center;margin:24px auto}
+ .h{width:110px;height:110px;border-radius:50%;background:#334155;font-size:56px;line-height:110px;cursor:pointer;user-select:none}
+ button{font-size:18px;padding:8px 24px}
+</style></head>
+<body>
+<h1>Whack-a-Bug</h1>
+<p>Score: <b id="s">0</b> &nbsp;|&nbsp; Time: <b id="t">30</b>s</p>
+<div id="g"></div>
+<button onclick="start()">Start</button>
+<p>Served from a Docker container (nginx:alpine)</p>
+<script>
+var score=0,time=30,cur=-1,tick=null,spawn=null,holes=[];
+var g=document.getElementById("g");
+for(var i=0;i<9;i++){(function(i){
+  var d=document.createElement("div");d.className="h";
+  d.onclick=function(){if(i===cur){score++;cur=-1;draw();}};
+  g.appendChild(d);holes.push(d);})(i);}
+function draw(){
+  holes.forEach(function(h,i){h.textContent=(i===cur)?"\uD83D\uDC1B":"";});
+  document.getElementById("s").textContent=score;
+  document.getElementById("t").textContent=time;
+}
+function start(){
+  clearInterval(tick);clearInterval(spawn);score=0;time=30;cur=-1;draw();
+  spawn=setInterval(function(){cur=Math.floor(Math.random()*9);draw();},700);
+  tick=setInterval(function(){time--;draw();
+    if(time<=0){clearInterval(tick);clearInterval(spawn);cur=-1;draw();alert("Final score: "+score);}},1000);
+}
+draw();
+</script>
+</body></html>
